@@ -218,7 +218,7 @@ int main(void) {
         if (stop < 10) { // 10个周期的启动延时（100ms）
           stop++;
           Wheel_Left_Speed = 0;
-          heel_Right_Speed = 0;
+          Wheel_Right_Speed = 0;
         }else {     // 启动延时完成，正常行驶
             Wheel_Left_Speed = Std_Speed;                    // 设定速度
             Wheel_Right_Speed = (int)Wheel_Left_Speed * 1.2; // 1.45
