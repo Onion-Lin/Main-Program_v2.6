@@ -41,7 +41,58 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+// 干簧管滑动窗口滤波相关
+#define REED_WINDOW_SIZE 5
+static GPIO_PinState reed_window[REED_WINDOW_SIZE] = {GPIO_PIN_RESET};
+static int reed_window_index = 0;
 
+// 电感滑动窗口相关（利用现有数组）
+#define INDUCTOR_WINDOW_SIZE 3
+static int16_t inductor_left_window[INDUCTOR_WINDOW_SIZE] = {0, 0, 0};
+static int16_t inductor_right_window[INDUCTOR_WINDOW_SIZE] = {0, 0, 0};
+static int inductor_window_index = 0;
+
+/**
+ * @brief 电感值滑动窗口滤波
+ * @param raw_value 原始ADC值
+ * @param window 滑动窗口数组
+ * @param window_size 窗口大小
+ * @param index 窗口索引
+ * @return 滤波后的电感值
+ */
+int16_t InductorFilter(int16_t raw_value, int16_t *window, int window_size, int *index);
+
+/**
+ * @brief 干簧管状态滑动窗口滤波
+ * @param current_state 当前干簧管状态
+ * @return 滤波后的干簧管状态
+ */
+GPIO_PinState ReedFilter(GPIO_PinState current_state);
+
+/**
+ * @brief 改进的微分项计算，带滤波功能
+ * @param current_error 当前误差
+ * @param dt 时间间隔
+ * @return 滤波后的微分值
+ */
+float CalculateFilteredDerivative(float current_error, float dt);
+
+/**
+ * @brief 改进的方向环PD控制算法
+ * @param error 方向误差
+ * @param is_turning 是否处于转弯状态
+ * @return 控制输出
+ */
+float ImprovedDirectionPDControl(float error, uint8_t is_turning);
+
+/**
+ * @brief 改进的差速PD控制
+ * @param steer_output 舵机输出值
+ * @param error 方向误差
+ * @param is_turning 是否处于转弯状态
+ * @return 差速输出
+ */
+float ImprovedWheelPDControl(float steer_output, float error, uint8_t is_turning);
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

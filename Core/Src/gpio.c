@@ -91,7 +91,7 @@ void MX_GPIO_Init(void)
 		/*配置输入引脚 - 干簧管*/
 		GPIO_InitStruct.Pin = GPIO_PIN_3;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;                 // 上拉
+    GPIO_InitStruct.Pull = GPIO_NOPULL;                 // float
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /* 配置输出引脚 - LED_2 */

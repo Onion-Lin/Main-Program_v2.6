@@ -67,9 +67,9 @@
 #include "usart.h"
 
 /* 舵机PWM参数定义 */
-#define Steer_PWM_Center 805                          // 舵机中值   调低偏右
-#define Steer_PWM_Limit_Lift (Steer_PWM_Center - 60)  // 舵机左转限幅
-#define Steer_PWM_Limit_Right (Steer_PWM_Center + 60) // 舵机右转限幅
+#define Steer_PWM_Center 792                          // 舵机中值   调低偏右
+#define Steer_PWM_Limit_Lift (Steer_PWM_Center - 70)  // 舵机左转限幅
+#define Steer_PWM_Limit_Right (Steer_PWM_Center + 70) // 舵机右转限幅
 
 /* 全局变量定义 */
 int16_t AD_Left, AD_Right;            // 左右电感的ADC值
@@ -79,38 +79,46 @@ uint16_t SteerPWM = Steer_PWM_Center; // 舵机PWM输出值
 void SystemClock_Config(void);
 
 // 拨码开关状态缓存
-static uint8_t last_switch_count = 0xFF;  // 初始化为无效状态
+static uint8_t last_switch_count = 0xFF; // 初始化为无效状态
 static uint8_t current_switch_count = 0;
 
 // PD与差速变量
 float Dir_Err_Wheel = 0;
-float Dir_Err_Wheel_Limit_Low=-400;     //差速限幅
-float Dir_Err_Wheel_Limit_High=400;
-float Kp, Kp_s, Kp_t_, Kd;
-int16_t fliter_Buf_L[3] = {0, 0, 0};
-int16_t fliter_Buf_R[3] = {0, 0, 0};
+float Dir_Err_Wheel_Limit_Low = -400; // 差速限幅
+float Dir_Err_Wheel_Limit_High = 400;
+float Kp, Kp_s, Kp_t_, Kd, Kd_s, Kd_t_; // 增加直行和转弯的微分参数
+int16_t fliter_Buf_L[3] = {0, 0, 0};    // 原有数组，现在用作左电感滑动窗口
+int16_t fliter_Buf_R[3] = {0, 0, 0};    // 原有数组，现在用作右电感滑动窗口
 int16_t Kd_Change;
-//float Err_Change = 0;
-float Err_Tmp[2]={0,0};
-//int16_t ADC_Left;
-//int16_t ADC_Right;
-//int middle = 0;
+float Err_Tmp[3] = {0, 0, 0}; // 增加历史误差缓冲区
+double fun;
+int stop = 0;
+
+// 干簧管停车相关变量
+int reed_count = 0; // 干簧管计数器
+int middle = 0;     // 直行转弯标志
 
 // 左电机驱动变量
-int16_t Wheel_Left_Speed;   // 驱动电机速度期望
-int16_t Std_Speed;          //基准速度 
-uint16_t Wheel_Left_PWM = 0;         // 驱动电机PWM输出值
-uint8_t Wheel_Left_IO = RESET;       // 驱动电机IO口电平
+int16_t Wheel_Left_Speed;      // 驱动电机速度期望
+int16_t Std_Speed;             // 基准速度
+uint16_t Wheel_Left_PWM = 0;   // 驱动电机PWM输出值
+uint8_t Wheel_Left_IO = RESET; // 驱动电机IO口电平
 
 // 右电机驱动变量
-int16_t Wheel_Right_Speed;      		// 驱动电机速度期望
-uint16_t Wheel_Right_PWM = 0;   		// 驱动电机PWM输出值
-uint8_t Wheel_Right_IO = RESET; 		// 驱动电机IO口电平
+int16_t Wheel_Right_Speed;      // 驱动电机速度期望
+uint16_t Wheel_Right_PWM = 0;   // 驱动电机PWM输出值
+uint8_t Wheel_Right_IO = RESET; // 驱动电机IO口电平
+
+// PD控制相关
+static float last_error = 0;          // 上一次误差
+static float last_derivative = 0;     // 上一次微分值
+static float filtered_derivative = 0; // 滤波后的微分值
 
 /**
  * @brief  主函数
  * @retval int
  */
+
 int main(void) {
   HAL_Init(); // 初始化HAL库
   SystemClock_Config();
@@ -134,72 +142,93 @@ int main(void) {
   RC_Init();  // 遥控接收初始化
   ADC_Init(); // ADC初始化
 
+  // 初始化PD控制参数
+  last_error = 0;
+  last_derivative = 0;
+  filtered_derivative = 0;
+
+  // 初始化干簧管滑动窗口
+  for (int i = 0; i < REED_WINDOW_SIZE; i++) {
+    reed_window[i] = GPIO_PIN_RESET;
+  }
+  reed_window_index = 0;
+
+  // 初始化电感滑动窗口
+  for (int i = 0; i < INDUCTOR_WINDOW_SIZE; i++) {
+    inductor_left_window[i] = 0;
+    inductor_right_window[i] = 0;
+  }
+  inductor_window_index = 0;
+
   while (1) {
+    // 1. 读取左右电感值 - 使用滑动窗口滤波
+    int16_t raw_ad_left = ADC_GetValue_Channel(ADC1_CH04_PA4); // A4:R72-L10
+    int16_t raw_ad_right =
+        ADC_GetValue_Channel(ADC1_CH15_PC5); // C5:R1200-L1300
 
-    // 1. 读取左右电感值
+    // 使用滑动窗口滤波电感值
+    AD_Left = InductorFilter(raw_ad_left, inductor_left_window,
+                             INDUCTOR_WINDOW_SIZE, &inductor_window_index);
+    AD_Right = InductorFilter(raw_ad_right, inductor_right_window,
+                              INDUCTOR_WINDOW_SIZE, &inductor_window_index);
 
-    // AD_Left
-    int i = 0;
-    for (i = 0; i < 3; i++) {
-      fliter_Buf_L[i] = ADC_GetValue_Channel(ADC1_CH04_PA4);
-    }
-    AD_Left =(int16_t)((fliter_Buf_L[0] + fliter_Buf_L[1] + fliter_Buf_L[2]) / 3);
-		//AD_Left   = ADC_GetValue_Channel(ADC1_CH04_PA4);			//A4:R72-L10
+    AD_Left *= fun;
+    AD_Right *= fun;
 
-    // AD_Right
-    int j = 0;
-    for (j = 0; j < 3; j++) {
-      fliter_Buf_R[j] = ADC_GetValue_Channel(ADC1_CH15_PC5);
-    }
-    AD_Right =(int16_t)((fliter_Buf_R[0] + fliter_Buf_R[1] + fliter_Buf_R[2]) / 3);
-		//AD_Right  = ADC_GetValue_Channel(ADC1_CH15_PC5);		//C5:R1200-L1300
-
-    //2.计算输出，PID
+    // 2.计算输出，PID
     Switch();
     Dir_Err = AD_Left - AD_Right;
 
     /*分段式P*/
-    if (Dir_Err > 800 || Dir_Err < -800) { // 转弯分段
-      Kp = Kp_t_;   
-      //Kp=0.51;                       // 在这里调整转弯的Kp值
-      // middle=1;
-    } else {     // 直行分段
-      Kp = Kp_s; // 在这里调直行的Kp值
-      //Kp=0.1;
-      // middle=0;
+    uint8_t is_turning = 0;
+    if (Dir_Err > 3000 * fun || Dir_Err < -3000 * fun) { // 转弯分段
+      Kp = Kp_t_;
+      is_turning = 1;
+    } else { // 直行分段
+      Kp = Kp_s;
+      is_turning = 0;
     }
 
-    /*微分修正D */
-    //Kd=0.2;
-    Err_Tmp[1] = Err_Tmp[0];
-    Err_Tmp[0] = Dir_Err;
-    Kd_Change = Err_Tmp[0] - Err_Tmp[1];
-    
-    Dir_Output = Steer_PWM_Center + Dir_Err * Kp - Kd_Change * Kd; // 舵机PD修正
-    SteerPWM =Data_Limit(Dir_Output, Steer_PWM_Limit_Lift,Steer_PWM_Limit_Right); // !!!!!舵机输出限幅 禁止删除!!!!!
-    
-    Dir_Err_Wheel = (Dir_Output - Steer_PWM_Center) * Kp  - Kd_Change * Kd * 5; // 差速PD修正
-    if (Dir_Err_Wheel > Dir_Err_Wheel_Limit_High) {
-      Dir_Err_Wheel = Dir_Err_Wheel_Limit_High;
-    } else if (Dir_Err_Wheel < Dir_Err_Wheel_Limit_Low) {
-      Dir_Err_Wheel = Dir_Err_Wheel_Limit_Low;
-    }// 差速限幅
+    /*改进的PD控制*/
+    float pd_output = ImprovedDirectionPDControl(Dir_Err, is_turning);
+    Dir_Output = Steer_PWM_Center + pd_output; // 舵机PD修正
+
+    // 限制舵机输出范围
+    if (Dir_Output > Steer_PWM_Limit_Right) {
+      Dir_Output = Steer_PWM_Limit_Right;
+    } else if (Dir_Output < Steer_PWM_Limit_Lift) {
+      Dir_Output = Steer_PWM_Limit_Lift;
+    }
+    SteerPWM = (uint16_t)Dir_Output;
+
+    // 差速PD控制
+    Dir_Err_Wheel = ImprovedWheelPDControl(SteerPWM, Dir_Err, is_turning);
 
     // 4. 电机控制逻辑
     if (Switch_EN_ON) { // 如果使能开关打开
-      //GPIO_PinState reed_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3); // 读取干簧管状态
-
-      /*if (reed_state ==GPIO_PIN_RESET) {   // 当干簧管吸合时（被磁铁靠近，输入为低电平）
-        Wheel_Left_Speed = 0; // 停车
-        Wheel_Right_Speed = 0;
-      } else {*/
-      Wheel_Left_Speed = Std_Speed;                     // 设定速度
-      Wheel_Right_Speed = (int)Wheel_Left_Speed * 1.45; // 1.45
-      Wheel_Left_Speed += (int)(-Dir_Err_Wheel);        // 差速修正
-      Wheel_Right_Speed += (int)(Dir_Err_Wheel);
-      HAL_GPIO_WritePin(Enable_IO_GPIO_Port, Enable_IO_Pin, GPIO_PIN_SET);
+      GPIO_PinState raw_reed_state =HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3); 
+      GPIO_PinState filtered_reed_state =ReedFilter(raw_reed_state); 
+      if (filtered_reed_state ==GPIO_PIN_SET) { // 当干簧管吸合时（被磁铁靠近，输入为高电平）
+        reed_count++;    
+      }
+      if (reed_count >= 30) {                     // 30需调
+        Wheel_Left_Speed = Wheel_Right_Speed = 0; // 停车
+        HAL_GPIO_WritePin(Enable_IO_GPIO_Port, Enable_IO_Pin, GPIO_PIN_RESET);
       } else {
-      Wheel_Left_Speed = 0; // 停止
+        if (stop < 10) { // 10个周期的启动延时（100ms）
+          stop++;
+          Wheel_Left_Speed = 0;
+          heel_Right_Speed = 0;
+        }else {     // 启动延时完成，正常行驶
+            Wheel_Left_Speed = Std_Speed;                    // 设定速度
+            Wheel_Right_Speed = (int)Wheel_Left_Speed * 1.2; // 1.45
+          }
+        } 
+        Wheel_Left_Speed -= (int)(Dir_Err_Wheel * 0.7); // 差速修正
+        Wheel_Right_Speed += (int)(Dir_Err_Wheel * 0.82);
+        HAL_GPIO_WritePin(Enable_IO_GPIO_Port, Enable_IO_Pin, GPIO_PIN_SET);
+    } else {
+      Wheel_Left_Speed = 0; // 使能关闭，停止
       Wheel_Right_Speed = 0;
       HAL_GPIO_WritePin(Enable_IO_GPIO_Port, Enable_IO_Pin, GPIO_PIN_RESET);
     }
@@ -227,82 +256,231 @@ int main(void) {
     }
 
     // 9. 输出控制信号
-    /*if (middle==0 ) {
-    //SteerPWM = Steer_PWM_Center;
-    Data_Limit (SteerPWM,Steer_PWM_Center-10,Steer_PWM_Center+10);
-    PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);             // 舵机控制
-    }else{
-    PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
-    } */
-    PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
+    if ((Dir_Err > 2000 * fun && Dir_Err < 3000 * fun) ||(Dir_Err < -2000 * fun && Dir_Err > -3000 * fun)) { // 转弯分段
+      Data_Limit(SteerPWM, Steer_PWM_Center - 40, Steer_PWM_Center + 40);
+      PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
+    } else if (Dir_Err > 3000 * fun) {
+      PWM_SetDuty(PWM_TIM3_CH3_B0, 845);
+    } else if (Dir_Err < -3000 * fun) {
+      PWM_SetDuty(PWM_TIM3_CH3_B0, 745);
+    } else {
+      SteerPWM = Steer_PWM_Center;
+      Data_Limit(SteerPWM, Steer_PWM_Center - 7, Steer_PWM_Center + 7);
+      PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM); // 舵机控制
+    }
     PWM_SetDuty(PWM_TIM4_CH2_B7, Wheel_Left_PWM);  // 左电机PWM
     PWM_SetDuty(PWM_TIM4_CH1_B6, Wheel_Right_PWM); // 右电机PWM
-    HAL_GPIO_WritePin(Wheel_Left_IO_GPIO_Port, Wheel_Left_IO_Pin, Wheel_Left_IO);
+    HAL_GPIO_WritePin(Wheel_Left_IO_GPIO_Port, Wheel_Left_IO_Pin,Wheel_Left_IO);
     HAL_GPIO_WritePin(Wheel_Right_IO_GPIO_Port, Wheel_Right_IO_Pin,Wheel_Right_IO);
-    
+
     // 11. 串口调试输出
     VOFA_JustFloat(&huart_DBG);
 
-    HAL_Delay(8); // 10ms循环周期
+    HAL_Delay(10); // 10ms循环周期
   }
 }
 
-/*更新拨码开关参数*/
+/*拨码开关*/
 void Switch(void) {
-    // 读取开关状态，将其作为二进制数处理
-    Switch_GetCode();
-    uint8_t bit1 = Switch_GetState_Index(Switch_Index_1);
-    uint8_t bit2 = Switch_GetState_Index(Switch_Index_2);
-    uint8_t bit3 = Switch_GetState_Index(Switch_Index_3);
-    uint8_t bit4 = Switch_GetState_Index(Switch_Index_4);
-    uint8_t switch_code = (bit4 << 3) | (bit3 << 2) | (bit2 << 1) | (bit1 << 0);
-    
-    if (switch_code != last_switch_count) {
+  // 读取开关状态，将其作为二进制数处理
+  Switch_GetCode();
+  uint8_t bit1 = Switch_GetState_Index(Switch_Index_1);
+  uint8_t bit2 = Switch_GetState_Index(Switch_Index_2);
+  uint8_t bit3 = Switch_GetState_Index(Switch_Index_3);
+  uint8_t bit4 = Switch_GetState_Index(Switch_Index_4);
+  uint8_t switch_code = (bit4 << 3) | (bit3 << 2) | (bit2 << 1) | (bit1 << 0);
+
+  if (switch_code != last_switch_count) {
     last_switch_count = switch_code;
     // 根据二进制编码设置参数
-    switch(switch_code) {
-      case 0b0000: // 全部开关关闭 (0000)
-            Std_Speed = 0;
-            Kp_s = 0.0;
-            Kp_t_ = 0.0;
-            Kd = 0.0;
-            break;
+    switch (switch_code) {
+    case 0b0000: // 全部开关关闭 (0000)
+      Std_Speed = 480;
+      Kp_s = 0.05;  // 直行P参数
+      Kp_t_ = 0.40; // 转弯P参数
+      Kd_s = 0.15;  // 直行D参数
+      Kd_t_ = 0.20; // 转弯D参数
+      Kd = 0.2;     // 兼容原参数
+      fun = 1;
+      break;
 
-      case 0b0001: // 仅开关1激活 (0001)
-            Std_Speed = 300;
-            Kp_s = 0.1;
-            Kp_t_ = 0.50;
-            Kd = 0.2;
-            break;
-        case 0b0010: // 仅开关2激活 (0010)
-            Std_Speed = 500;
-            Kp_s = 0.1;
-            Kp_t_ = 0.52;
-            Kd = 0.2;
-            break;
-        case 0b0100: // 仅开关3激活 (0100)
-            Std_Speed = 1000;
-            Kp_s = 0.11;
-            Kp_t_ = 0.55;
-            Kd = 0.22;
-            break;
-        case 0b1000: // 仅开关4激活 (1000)
-            Std_Speed = 1000;
-            Kp_s = 0.11;
-            Kp_t_ = 0.52;
-            Kd = 0.2;
-            break;
-        default:
-            switch_code = 0b0001; // 默认参数
-            break;
+    case 0b0001: // 仅开关1激活 (0001)
+      Std_Speed = 550;
+      Kp_s = 0.04;
+      Kp_t_ = 0.51;
+      Kd_s = 0.15;
+      Kd_t_ = 0.15;
+      Kd = 0.15;
+      fun = 0.6;
+      break;
+
+    case 0b0010: // 仅开关2激活 (0010)
+      Std_Speed = 650;
+      Kp_s = 0.06;
+      Kp_t_ = 0.51;
+      Kd_s = 0.20;
+      Kd_t_ = 0.23;
+      Kd = 0.23;
+      fun = 0.7;
+      break;
+
+    case 0b0100: // 仅开关3激活 (0100)
+      Std_Speed = 650;
+      Kp_s = 0.02;
+      Kp_t_ = 0.45;
+      Kd_s = 0.20;
+      Kd_t_ = 0.25;
+      Kd = 0.25;
+      fun = 0.9;
+      break;
+
+    case 0b1000: // 仅开关4激活 (1000)
+      Std_Speed = 650;
+      Kp_s = 0.05;
+      Kp_t_ = 0.62;
+      Kd_s = 0.20;
+      Kd_t_ = 0.235;
+      Kd = 0.235;
+      break;
+
+    default:
+      switch_code = 0b0001; // 默认参数
+      break;
     }
-    PWM_SetDuty(PWM_TIM1_CH4_A11,Switch_GetState_Index(Switch_Index_1) * PWM_BreathDuty());
-    HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, Switch_GetState_Index(Switch_Index_2));
-    HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, Switch_GetState_Index(Switch_Index_3));
-    HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, Switch_GetState_Index(Switch_Index_4));
+    PWM_SetDuty(PWM_TIM1_CH4_A11,
+                Switch_GetState_Index(Switch_Index_1) * PWM_BreathDuty());
+    HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin,
+                      Switch_GetState_Index(Switch_Index_2));
+    HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin,
+                      Switch_GetState_Index(Switch_Index_3));
+    HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin,
+                      Switch_GetState_Index(Switch_Index_4));
   }
 }
 
+/**
+ * @brief 改进的方向环PD控制算法
+ * @param error 方向误差
+ * @param is_turning 是否处于转弯状态
+ * @return 控制输出
+ */
+float ImprovedDirectionPDControl(float error, uint8_t is_turning) {
+  // 根据运行状态选择参数
+  float kp = is_turning ? Kp_t_ : Kp_s;
+  float kd = is_turning ? Kd_t_ : Kd_s;
+
+  // 计算微分项（使用固定时间步长10ms = 0.01s）
+  float dt = 0.01f;
+  float derivative = CalculateFilteredDerivative(error, dt);
+
+  // PD控制输出
+  float output = kp * error + kd * derivative;
+
+  return output;
+}
+
+/**
+ * @brief 改进的差速PD控制
+ * @param steer_output 舵机输出值
+ * @param error 方向误差
+ * @param is_turning 是否处于转弯状态
+ * @return 差速输出
+ */
+float ImprovedWheelPDControl(float steer_output, float error,uint8_t is_turning) {
+  // 计算舵机偏差
+  float steer_error = steer_output - Steer_PWM_Center;
+
+  // 根据运行状态选择参数
+  float kp = is_turning ? Kp_t_ : Kp_s;
+  float kd = is_turning ? Kd_t_ * 3.0f : Kd_s * 2.0f; // 差速微分项适当调整
+
+  // 计算微分项
+  float dt = 0.01f;
+  float derivative = CalculateFilteredDerivative(error, dt);
+
+  // 差速PD控制输出
+  float wheel_output = kp * steer_error + kd * derivative;
+
+  // 限制差速输出范围
+  if (wheel_output > Dir_Err_Wheel_Limit_High) {
+    wheel_output = Dir_Err_Wheel_Limit_High;
+  } else if (wheel_output < Dir_Err_Wheel_Limit_Low) {
+    wheel_output = Dir_Err_Wheel_Limit_Low;
+  }
+
+  return wheel_output;
+}
+
+/**
+ * @brief 改进的微分项计算，带滤波功能
+ * @param current_error 当前误差
+ * @param dt 时间间隔
+ * @return 滤波后的微分值
+ */
+float CalculateFilteredDerivative(float current_error, float dt) {
+  // 计算原始微分
+  float raw_derivative = (current_error - last_error) / dt;
+
+  // 一阶低通滤波器参数
+  const float filter_coeff = 0.2f; // 滤波系数，越小滤波越强
+
+  // 应用一阶低通滤波
+  filtered_derivative =
+      filter_coeff * raw_derivative + (1.0f - filter_coeff) * last_derivative;
+
+  // 更新历史值
+  last_error = current_error;
+  last_derivative = filtered_derivative;
+
+  return filtered_derivative;
+}
+
+/**
+ * @brief 电感值滑动窗口滤波
+ * @param raw_value 原始ADC值
+ * @param window 滑动窗口数组
+ * @param window_size 窗口大小
+ * @param index 窗口索引
+ * @return 滤波后的电感值
+ */
+int16_t InductorFilter(int16_t raw_value, int16_t *window, int window_size,int *index) {
+  window[*index] = raw_value; // 将当前值存入滑动窗口
+  *index = (*index + 1) % window_size;
+
+  // 计算窗口内所有值的平均值
+  int32_t sum = 0;
+  for (int i = 0; i < window_size; i++) {
+    sum += window[i];
+  }
+
+  return (int16_t)(sum / window_size);
+}
+
+/**
+ * @brief 干簧管状态滑动窗口滤波
+ * @param current_state 当前干簧管状态
+ * @return 滤波后的干簧管状态
+ */
+GPIO_PinState ReedFilter(GPIO_PinState current_state) {
+  // 将当前状态存入滑动窗口
+  reed_window[reed_window_index] = current_state;
+  reed_window_index = (reed_window_index + 1) % REED_WINDOW_SIZE;
+
+  // 统计窗口中高电平的数量
+  int high_count = 0;
+  for (int i = 0; i < REED_WINDOW_SIZE; i++) {
+    if (reed_window[i] == GPIO_PIN_SET) { // 高电平
+      high_count++;
+    }
+  }
+
+  // 如果超过一半为高电平，则认为检测到磁铁
+  if (high_count > REED_WINDOW_SIZE / 2) {
+    return GPIO_PIN_SET; // 高电平，检测到磁铁
+  } else {
+    return GPIO_PIN_RESET; // 低电平，未检测到磁铁
+  }
+}
 
 /**
  * @brief 系统时钟配置 - 72MHz
