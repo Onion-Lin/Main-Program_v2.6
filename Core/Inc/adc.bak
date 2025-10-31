@@ -1,0 +1,92 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file    adc.h
+  * @brief   This file contains all the function prototypes for
+  *          the adc.c file
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2023 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __ADC_H__
+#define __ADC_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+
+/* USER CODE BEGIN Includes */
+#include "dma.h"    // DMA传输功能
+#include "tim.h"    // 定时器功能
+/* USER CODE END Includes */
+
+// ADC1句柄声明
+extern ADC_HandleTypeDef hadc1;
+
+/* USER CODE BEGIN Private defines */
+
+// 定义ADC通道最大索引
+#define ADC_ChannelIndexMax     (6U)
+
+// 自定义ADC通道枚举类型
+typedef enum
+{
+    ADC1_CH04_PA4       = 0,
+    ADC1_CH15_PC5       ,
+	ADC1_CH05_PA5       ,
+    ADC1_CH10_PC0       ,
+    ADC1_CH11_PC1       ,
+    ADC1_CH12_PC2       ,
+}ADC_Channel_enum;
+
+/* USER CODE END Private defines */
+
+// 函数声明 - 初始化ADC1
+void MX_ADC1_Init(void);
+
+// 用户自定义函数声明
+void ADC_Init(void);  // ADC初始化函数
+uint16_t ADC_GetValue_Channel(ADC_Channel_enum Channel);  // 获取指定通道的ADC值
+/* USER CODE END Prototypes */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __ADC_H__ */
+
+/*
+ * 这个头文件的功能说明：
+ * 
+ * 1. 头文件保护：使用#ifndef宏防止重复包含
+ * 2. 依赖包含：包含main.h以及dma.h和tim.h
+ * 3. ADC句柄：声明ADC_HandleTypeDef类型的hadc1句柄
+ * 4. 通道枚举：定义了6个可用的ADC通道及对应的GPIO引脚
+ * 5. 函数接口：提供ADC初始化和值获取的函数声明
+ * 
+ * 从通道定义看，这个系统使用了以下ADC通道：
+ * - PA4 (通道4) - 可能用于传感器输入
+ * - PC5 (通道15) - 可能用于电源监测
+ * - PA5 (通道5) - 可能用于控制电位器
+ * - PC0-PC2 (通道10-12) - 可能用于多路传感器
+ * 
+ * 结合DMA和定时器，可能实现定时采样或连续转换功能
+ */
+
+
+
+

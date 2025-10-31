@@ -1,0 +1,332 @@
+/* USER CODE BEGIN Header */
+/**
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023-2025 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * * * * * * * * * * * *
+ *....................................................................................................*
+ *....................................................................................................*
+ *....................................................................................................*
+ *.............................................tttttttttttttttttttttt.................................*
+ *............................................ttttttttttttttttttttttt.................................*
+ *............................................tttttttttttttttttttttt..................................*
+ *...........................................tttttttttttttttttttttt...................................*
+ *..........................................ttttttttttttttttttttttt...................................*
+ *..........................................tttttttttttttttttttttt....................................*
+ *..........................................ttttttttttttttttttttt.....................................*
+ *....................................................................................................*
+ *....................ttttttttttttt.......tttttttttttttttttttttt...tttttttttt.........................*
+ *...................tttttttttttt.....ttttttttttttttttttttttttt....tttttttttt.........................*
+ *...................tttttttt......tttttttttttttttttttttttttttt...tttttttttt..........................*
+ *..................ttttt......ttttttttttttttttttttttttttttttt...tttttttttt...........................*
+ *.................ttt......ttttttttttttttttttttttttttttttttt....tttttttttt...........................*
+ *................tt....ttttttttttttttttttttttttttttttttttttt...tttttttttt............................*
+ *...................ttttttttttttttttttttttttttttttttttttttt....ttttttttt.............................*
+ *................................ttttttttttttttttttttttttt...........................................*
+ *...............................tttttttttttttttttttttttttt...........................................*
+ *..............................tttttttttttttttttttttttttt............................................*
+ *..............................ttttttttttttttttttttttttt.............................................*
+ *.............................tttttttttttttttttttttttttt.............................................*
+ *............................ttttttttttttttttttttttttttt........ttt..................................*
+ *............................ttttttttttttttttttttttttttttttttttttt...................................*
+ *...........................ttttttttttttttttttttttttttttttttttttt....................................*
+ *...........................tttttttttttttttttttttttttttttttttttt.....................................*
+ *...........................tttttttttttttttttttttttttttttttttttt.....................................*
+ *...........................ttttttttttttttttttttttttttttttttttt......................................*
+ *............................ttttttttttttttttttttttttttttttttt.......................................*
+ *.............................ttttttttttttttttttttttttttttttt........................................*
+ *..............................tttttttttttttttttttttttttttt..........................................*
+ *.................................ttttttttttttttttttttt..............................................*
+ *........................................tttttt......................................................*
+ *....................................................................................................*
+ *....................................................................................................*
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * * * * * * * * * * * *
+ */
+
+/* USER CODE END Header */
+#include "main.h"
+#include "adc.h"
+#include "dma.h"
+#include "gpio.h"
+#include "headfiles.h"
+#include "tim.h"
+#include "usart.h"
+
+/* 舵机PWM参数定义 */
+#define Steer_PWM_Center 795                          // 舵机中值   调低偏右
+#define Steer_PWM_Limit_Lift (Steer_PWM_Center - 60)  // 舵机左转限幅
+#define Steer_PWM_Limit_Right (Steer_PWM_Center + 60) // 舵机右转限幅
+
+/* 全局变量定义 */
+int16_t AD_Left, AD_Right;            // 左右电感的ADC值
+float Dir_Err;                        // 方向偏差
+int16_t Dir_Output;                   // 方向输出值
+uint16_t SteerPWM = Steer_PWM_Center; // 舵机PWM输出值
+void SystemClock_Config(void);
+
+// PD与差速变量
+float Dir_Err_Wheel = 0;
+float Dir_Err_Wheel_Limit_Low=-400;     //差速限幅
+float Dir_Err_Wheel_Limit_High=400;
+float Kp, Kp_s, Kp_t_, Kd;
+int16_t fliter_Buf_L[3] = {0, 0, 0};
+int16_t fliter_Buf_R[3] = {0, 0, 0};
+int16_t Kd_Change;
+//float Err_Change = 0;
+float Err_Tmp[2]={0,0};
+//int16_t ADC_Left;
+//int16_t ADC_Right;
+//int middle = 0;
+
+// 左电机驱动变量
+int16_t Wheel_Left_Speed;   // 驱动电机速度期望
+int16_t Std_Speed;          //基准速度 
+uint16_t Wheel_Left_PWM = 0;         // 驱动电机PWM输出值
+uint8_t Wheel_Left_IO = RESET;       // 驱动电机IO口电平
+
+// 右电机驱动变量
+int16_t Wheel_Right_Speed;      		// 驱动电机速度期望
+uint16_t Wheel_Right_PWM = 0;   		// 驱动电机PWM输出值
+uint8_t Wheel_Right_IO = RESET; 		// 驱动电机IO口电平
+
+/**
+ * @brief  主函数
+ * @retval int
+ */
+int main(void) {
+  HAL_Init(); // 初始化HAL库
+  SystemClock_Config();
+
+  // 初始化所有外设
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_USART1_UART_Init();
+  MX_USART3_UART_Init();
+  MX_TIM3_Init();
+  MX_TIM5_Init();
+  MX_TIM4_Init();
+  MX_TIM6_Init();
+  MX_TIM2_Init();
+  MX_TIM8_Init();
+  MX_TIM1_Init();
+  MX_ADC1_Init();
+
+  // 用户初始化
+  PWM_Init(); // PWM初始化
+  RC_Init();  // 遥控接收初始化
+  ADC_Init(); // ADC初始化
+
+  while (1) {
+
+    // 1. 读取左右电感值
+
+    // AD_Left
+    int i = 0;
+    for (i = 0; i < 3; i++) {
+      fliter_Buf_L[i] = ADC_GetValue_Channel(ADC1_CH04_PA4);
+    }
+    AD_Left =(int16_t)((fliter_Buf_L[0] + fliter_Buf_L[1] + fliter_Buf_L[2]) / 3);
+		//AD_Left   = ADC_GetValue_Channel(ADC1_CH04_PA4);			//A4:R72-L10
+
+    // AD_Right
+    int j = 0;
+    for (j = 0; j < 3; j++) {
+      fliter_Buf_R[j] = ADC_GetValue_Channel(ADC1_CH15_PC5);
+    }
+    AD_Right =(int16_t)((fliter_Buf_R[0] + fliter_Buf_R[1] + fliter_Buf_R[2]) / 3);
+		//AD_Right  = ADC_GetValue_Channel(ADC1_CH15_PC5);		//C5:R1200-L1300
+
+    //2.计算输出，PID
+    
+    /*拨码开关功能*/
+    Switch_GetCode();
+    
+    int a1 = Switch_GetState_Index(Switch_Index_1);
+    int a2 = Switch_GetState_Index(Switch_Index_2);
+    int a3 = Switch_GetState_Index(Switch_Index_3);
+    int a4 = Switch_GetState_Index(Switch_Index_4);
+    if (a1 == 0) { // 开关一
+      Std_Speed = 300;
+      Kp_s = 0.1;
+      Kp_t_ = 0.50;
+      Kd = 0.2;
+    }else if (a2 == 0) { // 开关二
+      Std_Speed = 500;
+      Kp_s = 0.1;
+      Kp_t_ = 0.52;
+      Kd = 0.2;
+    }else if (a3 == 0) { // 开关三
+      Std_Speed = 1000;
+      Kp_s = 0.11;
+      Kp_t_ = 0.55;
+      Kd = 0.22;
+    }else if (a4 == 0) { // 开关四
+      Std_Speed = 1000;
+      Kp_s = 0.11;
+      Kp_t_ = 0.52;
+      Kd = 0.2;
+    }
+    
+    Dir_Err = AD_Left - AD_Right;
+
+    /*分段式P*/
+    if (Dir_Err > 800 || Dir_Err < -800) { // 转弯分段
+      Kp = Kp_t_;   
+      //Kp=0.51;                       // 在这里调整转弯的Kp值
+      // middle=1;
+    } else {     // 直行分段
+      Kp = Kp_s; // 在这里调直行的Kp值
+      //Kp=0.1;
+      // middle=0;
+    }
+
+    /*微分修正D */
+    //Kd=0.2;
+    Err_Tmp[1] = Err_Tmp[0];
+    Err_Tmp[0] = Dir_Err;
+    Kd_Change = Err_Tmp[0] - Err_Tmp[1];
+    
+    Dir_Output = Steer_PWM_Center + Dir_Err * Kp - Kd_Change * Kd; // 舵机PD修正
+    SteerPWM =Data_Limit(Dir_Output, Steer_PWM_Limit_Lift,Steer_PWM_Limit_Right); // !!!!!舵机输出限幅 禁止删除!!!!!
+    
+    Dir_Err_Wheel = (Dir_Output - Steer_PWM_Center) * Kp  -Kd_Change * Kd * 5; // 差速PD修正
+    Dir_Err_Wheel = Data_Limit(Dir_Err_Wheel,Dir_Err_Wheel_Limit_Low,Dir_Err_Wheel_Limit_High);   //差速限幅
+
+    // 4. 电机控制逻辑
+    if (Switch_EN_ON) { // 如果使能开关打开
+      //GPIO_PinState reed_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3); // 读取干簧管状态
+
+      /*if (reed_state ==GPIO_PIN_RESET) {   // 当干簧管吸合时（被磁铁靠近，输入为低电平）
+        Wheel_Left_Speed = 0; // 停车
+        Wheel_Right_Speed = 0;
+      } else {*/
+      Wheel_Left_Speed = Std_Speed;                     // 设定速度
+      Wheel_Right_Speed = (int)Wheel_Left_Speed * 1.45; // 1.45
+      Wheel_Right_Speed += (int)(Dir_Err_Wheel);  // 差速
+      Wheel_Left_Speed -= (int)(Dir_Err_Wheel);
+      HAL_GPIO_WritePin(Enable_IO_GPIO_Port, Enable_IO_Pin, GPIO_PIN_SET);
+      } else {
+      Wheel_Left_Speed = 0; // 停止
+      Wheel_Right_Speed = 0;
+      HAL_GPIO_WritePin(Enable_IO_GPIO_Port, Enable_IO_Pin, GPIO_PIN_RESET);
+    }
+
+    // 6. 速度限幅
+    Wheel_Left_Speed = Data_Limit(Wheel_Left_Speed, -4000, 4000);
+    Wheel_Right_Speed = Data_Limit(Wheel_Right_Speed, -4000, 4000);
+
+    // 7. 左电机PWM和方向控制
+    if (Wheel_Left_Speed >= 0) {
+      Wheel_Left_PWM = Wheel_Left_Speed;
+      Wheel_Left_IO = GPIO_PIN_RESET;
+    } else {
+      Wheel_Left_PWM = 4800 + Wheel_Left_Speed;
+      Wheel_Left_IO = GPIO_PIN_SET;
+    }
+
+    // 8. 右电机PWM和方向控制
+    if (Wheel_Right_Speed >= 0) {
+      Wheel_Right_PWM = Wheel_Right_Speed;
+      Wheel_Right_IO = GPIO_PIN_RESET;
+    } else {
+      Wheel_Right_PWM = 4800 + Wheel_Right_Speed;
+      Wheel_Right_IO = GPIO_PIN_SET;
+    }
+
+    // 9. 输出控制信号
+    /*if (middle==0 ) {
+    //SteerPWM = Steer_PWM_Center;
+    Data_Limit (SteerPWM,Steer_PWM_Center-10,Steer_PWM_Center+10);
+    PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);             // 舵机控制
+    }else{
+    PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
+    } */
+    PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
+    PWM_SetDuty(PWM_TIM4_CH2_B7, Wheel_Left_PWM);  // 左电机PWM
+    PWM_SetDuty(PWM_TIM4_CH1_B6, Wheel_Right_PWM); // 右电机PWM
+    HAL_GPIO_WritePin(Wheel_Left_IO_GPIO_Port, Wheel_Left_IO_Pin, Wheel_Left_IO);
+    HAL_GPIO_WritePin(Wheel_Right_IO_GPIO_Port, Wheel_Right_IO_Pin,Wheel_Right_IO);
+
+    // 10. LED状态指示
+    Switch_GetCode(); // 读取拨码开关状态
+    
+		//GPIO_PinState HAL_GPIO_ReadPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
+		//HAL_GPIO_WritePin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);
+		
+		PWM_SetDuty(PWM_TIM1_CH4_A11,Switch_GetState_Index(Switch_Index_1) * PWM_BreathDuty());
+    HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, Switch_GetState_Index(Switch_Index_2));
+    HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, Switch_GetState_Index(Switch_Index_3));
+    HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, Switch_GetState_Index(Switch_Index_4));
+
+    // 11. 串口调试输出
+    VOFA_JustFloat(&huart_DBG);
+
+    HAL_Delay(8); // 10ms循环周期
+  }
+}
+
+/**
+ * @brief 系统时钟配置 - 72MHz
+ */
+void SystemClock_Config(void) {
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+
+  // 配置HSE和PLL
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9; // 8MHz * 9 = 72MHz
+  HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+  // 配置系统时钟
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
+                                RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2; // 36MHz
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1; // 72MHz
+  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
+
+  // ADC时钟配置
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6; // 6MHz
+  HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
+}
+
+/**
+ * @brief 定时器中断回调函数
+ */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+  if (htim->Instance == TIM7) {
+    HAL_IncTick(); // 增加系统滴答计数
+  }
+}
+
+/**
+ * @brief 错误处理函数
+ */
+void Error_Handler(void) {
+  __disable_irq();
+  while (1) {
+    // 错误发生时的处理
+  }
+}
