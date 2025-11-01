@@ -65,6 +65,7 @@ Section Cross References
     main.o(.text.main) refers to fcmpgt.o(.text) for __aeabi_fcmpgt
     main.o(.text.main) refers to fcmpge.o(.text) for __aeabi_fcmpge
     main.o(.text.main) refers to stm32f1xx_hal_gpio.o(.text.HAL_GPIO_ReadPin) for HAL_GPIO_ReadPin
+    main.o(.text.main) refers to stm32f1xx_hal.o(.text.HAL_GetTick) for HAL_GetTick
     main.o(.text.main) refers to dcmpge.o(.text) for __aeabi_dcmpge
     main.o(.text.main) refers to dcmple.o(.text) for __aeabi_dcmple
     main.o(.ARM.exidx.text.main) refers to main.o(.text.main) for [Anonymous Symbol]
@@ -72,7 +73,7 @@ Section Cross References
     main.o(.text.SystemClock_Config) refers to stm32f1xx_hal_rcc.o(.text.HAL_RCC_ClockConfig) for HAL_RCC_ClockConfig
     main.o(.text.SystemClock_Config) refers to stm32f1xx_hal_rcc_ex.o(.text.HAL_RCCEx_PeriphCLKConfig) for HAL_RCCEx_PeriphCLKConfig
     main.o(.ARM.exidx.text.SystemClock_Config) refers to main.o(.text.SystemClock_Config) for [Anonymous Symbol]
-    main.o(.ARM.exidx.text.InductorFilter) refers to main.o(.text.InductorFilter) for [Anonymous Symbol]
+    main.o(.ARM.exidx.text.ADC_Filter) refers to main.o(.text.ADC_Filter) for [Anonymous Symbol]
     main.o(.text.Switch) refers to ctrl.o(.text.Switch_GetCode) for Switch_GetCode
     main.o(.text.Switch) refers to ctrl.o(.bss.hCtrl) for hCtrl
     main.o(.text.Switch) refers to main.o(.data.last_switch_count) for last_switch_count
@@ -81,26 +82,26 @@ Section Cross References
     main.o(.text.Switch) refers to pwm.o(.text.PWM_SetDuty) for PWM_SetDuty
     main.o(.text.Switch) refers to stm32f1xx_hal_gpio.o(.text.HAL_GPIO_WritePin) for HAL_GPIO_WritePin
     main.o(.ARM.exidx.text.Switch) refers to main.o(.text.Switch) for [Anonymous Symbol]
-    main.o(.text.ImprovedDirectionPDControl) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
-    main.o(.text.ImprovedDirectionPDControl) refers to fadd.o(.text) for __aeabi_fsub
-    main.o(.text.ImprovedDirectionPDControl) refers to fdiv.o(.text) for __aeabi_fdiv
-    main.o(.text.ImprovedDirectionPDControl) refers to fmul.o(.text) for __aeabi_fmul
-    main.o(.ARM.exidx.text.ImprovedDirectionPDControl) refers to main.o(.text.ImprovedDirectionPDControl) for [Anonymous Symbol]
-    main.o(.text.ImprovedWheelPDControl) refers to fadd.o(.text) for __aeabi_fadd
-    main.o(.text.ImprovedWheelPDControl) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
-    main.o(.text.ImprovedWheelPDControl) refers to fmul.o(.text) for __aeabi_fmul
-    main.o(.text.ImprovedWheelPDControl) refers to fdiv.o(.text) for __aeabi_fdiv
-    main.o(.text.ImprovedWheelPDControl) refers to main.o(.data..L_MergedGlobals) for .L_MergedGlobals
-    main.o(.text.ImprovedWheelPDControl) refers to fcmpgt.o(.text) for __aeabi_fcmpgt
-    main.o(.text.ImprovedWheelPDControl) refers to fcmpge.o(.text) for __aeabi_fcmpge
-    main.o(.ARM.exidx.text.ImprovedWheelPDControl) refers to main.o(.text.ImprovedWheelPDControl) for [Anonymous Symbol]
-    main.o(.text.ReedFilter) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
-    main.o(.ARM.exidx.text.ReedFilter) refers to main.o(.text.ReedFilter) for [Anonymous Symbol]
-    main.o(.text.CalculateFilteredDerivative) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
-    main.o(.text.CalculateFilteredDerivative) refers to fadd.o(.text) for __aeabi_fsub
-    main.o(.text.CalculateFilteredDerivative) refers to fdiv.o(.text) for __aeabi_fdiv
-    main.o(.text.CalculateFilteredDerivative) refers to fmul.o(.text) for __aeabi_fmul
-    main.o(.ARM.exidx.text.CalculateFilteredDerivative) refers to main.o(.text.CalculateFilteredDerivative) for [Anonymous Symbol]
+    main.o(.text.PD_Control) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
+    main.o(.text.PD_Control) refers to fadd.o(.text) for __aeabi_fsub
+    main.o(.text.PD_Control) refers to fdiv.o(.text) for __aeabi_fdiv
+    main.o(.text.PD_Control) refers to fmul.o(.text) for __aeabi_fmul
+    main.o(.ARM.exidx.text.PD_Control) refers to main.o(.text.PD_Control) for [Anonymous Symbol]
+    main.o(.text.Wheel_PD_Control) refers to fadd.o(.text) for __aeabi_fadd
+    main.o(.text.Wheel_PD_Control) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
+    main.o(.text.Wheel_PD_Control) refers to fmul.o(.text) for __aeabi_fmul
+    main.o(.text.Wheel_PD_Control) refers to fdiv.o(.text) for __aeabi_fdiv
+    main.o(.text.Wheel_PD_Control) refers to main.o(.data..L_MergedGlobals) for .L_MergedGlobals
+    main.o(.text.Wheel_PD_Control) refers to fcmpgt.o(.text) for __aeabi_fcmpgt
+    main.o(.text.Wheel_PD_Control) refers to fcmpge.o(.text) for __aeabi_fcmpge
+    main.o(.ARM.exidx.text.Wheel_PD_Control) refers to main.o(.text.Wheel_PD_Control) for [Anonymous Symbol]
+    main.o(.text.Stop_Filter) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
+    main.o(.ARM.exidx.text.Stop_Filter) refers to main.o(.text.Stop_Filter) for [Anonymous Symbol]
+    main.o(.text.Kd_Math) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
+    main.o(.text.Kd_Math) refers to fadd.o(.text) for __aeabi_fsub
+    main.o(.text.Kd_Math) refers to fdiv.o(.text) for __aeabi_fdiv
+    main.o(.text.Kd_Math) refers to fmul.o(.text) for __aeabi_fmul
+    main.o(.ARM.exidx.text.Kd_Math) refers to main.o(.text.Kd_Math) for [Anonymous Symbol]
     main.o(.text.HAL_TIM_PeriodElapsedCallback) refers to stm32f1xx_hal.o(.text.HAL_IncTick) for HAL_IncTick
     main.o(.ARM.exidx.text.HAL_TIM_PeriodElapsedCallback) refers to main.o(.text.HAL_TIM_PeriodElapsedCallback) for [Anonymous Symbol]
     main.o(.ARM.exidx.text.Error_Handler) refers to main.o(.text.Error_Handler) for [Anonymous Symbol]
@@ -1057,17 +1058,17 @@ Removing Unused input sections from the image.
     Removing main.o(.ARM.exidx.text.main), (8 bytes).
     Removing main.o(.text.SystemClock_Config), (98 bytes).
     Removing main.o(.ARM.exidx.text.SystemClock_Config), (8 bytes).
-    Removing main.o(.text.InductorFilter), (146 bytes).
-    Removing main.o(.ARM.exidx.text.InductorFilter), (8 bytes).
+    Removing main.o(.text.ADC_Filter), (146 bytes).
+    Removing main.o(.ARM.exidx.text.ADC_Filter), (8 bytes).
     Removing main.o(.ARM.exidx.text.Switch), (8 bytes).
-    Removing main.o(.text.ImprovedDirectionPDControl), (138 bytes).
-    Removing main.o(.ARM.exidx.text.ImprovedDirectionPDControl), (8 bytes).
-    Removing main.o(.text.ImprovedWheelPDControl), (216 bytes).
-    Removing main.o(.ARM.exidx.text.ImprovedWheelPDControl), (8 bytes).
-    Removing main.o(.text.ReedFilter), (120 bytes).
-    Removing main.o(.ARM.exidx.text.ReedFilter), (8 bytes).
-    Removing main.o(.text.CalculateFilteredDerivative), (76 bytes).
-    Removing main.o(.ARM.exidx.text.CalculateFilteredDerivative), (8 bytes).
+    Removing main.o(.text.PD_Control), (138 bytes).
+    Removing main.o(.ARM.exidx.text.PD_Control), (8 bytes).
+    Removing main.o(.text.Wheel_PD_Control), (216 bytes).
+    Removing main.o(.ARM.exidx.text.Wheel_PD_Control), (8 bytes).
+    Removing main.o(.text.Stop_Filter), (120 bytes).
+    Removing main.o(.ARM.exidx.text.Stop_Filter), (8 bytes).
+    Removing main.o(.text.Kd_Math), (76 bytes).
+    Removing main.o(.ARM.exidx.text.Kd_Math), (8 bytes).
     Removing main.o(.ARM.exidx.text.HAL_TIM_PeriodElapsedCallback), (8 bytes).
     Removing main.o(.ARM.exidx.text.Error_Handler), (8 bytes).
     Removing main.o(.bss.fliter_Buf_L), (6 bytes).
@@ -2094,22 +2095,22 @@ Image Symbol Table
     [Anonymous Symbol]                       0x0800413c   Section        0  rc.o(.text.RC_ReceiveCallback)
     [Anonymous Symbol]                       0x08004260   Section        0  stm32f1xx_it.o(.text.SVC_Handler)
     [Anonymous Symbol]                       0x08004264   Section        0  main.o(.text.Switch)
-    [Anonymous Symbol]                       0x0800446c   Section        0  ctrl.o(.text.Switch_GetCode)
-    [Anonymous Symbol]                       0x080044c4   Section        0  stm32f1xx_it.o(.text.SysTick_Handler)
-    [Anonymous Symbol]                       0x080044c8   Section        0  system_stm32f1xx.o(.text.SystemInit)
-    [Anonymous Symbol]                       0x080044cc   Section        0  stm32f1xx_it.o(.text.TIM6_IRQHandler)
-    [Anonymous Symbol]                       0x080044d8   Section        0  stm32f1xx_it.o(.text.TIM7_IRQHandler)
-    [Anonymous Symbol]                       0x080044e4   Section        0  stm32f1xx_it.o(.text.UsageFault_Handler)
-    [Anonymous Symbol]                       0x080044e8   Section        0  usart.o(.text.Usart_SendArr)
-    [Anonymous Symbol]                       0x080044f0   Section        0  fun.o(.text.VOFA_JustFloat)
-    [Anonymous Symbol]                       0x0800453c   Section        0  main.o(.text.main)
-    i.__scatterload_copy                     0x08004b6c   Section       14  handlers.o(i.__scatterload_copy)
-    i.__scatterload_null                     0x08004b7a   Section        2  handlers.o(i.__scatterload_null)
-    i.__scatterload_zeroinit                 0x08004b7c   Section       14  handlers.o(i.__scatterload_zeroinit)
-    HAL_RCC_GetSysClockFreq.aPredivFactorTable 0x08004ba2   Data           2  stm32f1xx_hal_rcc.o(.rodata.HAL_RCC_GetSysClockFreq.aPredivFactorTable)
-    [Anonymous Symbol]                       0x08004ba2   Section        0  stm32f1xx_hal_rcc.o(.rodata.HAL_RCC_GetSysClockFreq.aPredivFactorTable)
-    HAL_RCC_GetSysClockFreq.aPLLMULFactorTable 0x08004ba4   Data          16  stm32f1xx_hal_rcc.o(.rodata.cst16)
-    [Anonymous Symbol]                       0x08004ba4   Section        0  stm32f1xx_hal_rcc.o(.rodata.cst16)
+    [Anonymous Symbol]                       0x08004458   Section        0  ctrl.o(.text.Switch_GetCode)
+    [Anonymous Symbol]                       0x080044b0   Section        0  stm32f1xx_it.o(.text.SysTick_Handler)
+    [Anonymous Symbol]                       0x080044b4   Section        0  system_stm32f1xx.o(.text.SystemInit)
+    [Anonymous Symbol]                       0x080044b8   Section        0  stm32f1xx_it.o(.text.TIM6_IRQHandler)
+    [Anonymous Symbol]                       0x080044c4   Section        0  stm32f1xx_it.o(.text.TIM7_IRQHandler)
+    [Anonymous Symbol]                       0x080044d0   Section        0  stm32f1xx_it.o(.text.UsageFault_Handler)
+    [Anonymous Symbol]                       0x080044d4   Section        0  usart.o(.text.Usart_SendArr)
+    [Anonymous Symbol]                       0x080044dc   Section        0  fun.o(.text.VOFA_JustFloat)
+    [Anonymous Symbol]                       0x08004528   Section        0  main.o(.text.main)
+    i.__scatterload_copy                     0x08004b8e   Section       14  handlers.o(i.__scatterload_copy)
+    i.__scatterload_null                     0x08004b9c   Section        2  handlers.o(i.__scatterload_null)
+    i.__scatterload_zeroinit                 0x08004b9e   Section       14  handlers.o(i.__scatterload_zeroinit)
+    HAL_RCC_GetSysClockFreq.aPredivFactorTable 0x08004bc4   Data           2  stm32f1xx_hal_rcc.o(.rodata.HAL_RCC_GetSysClockFreq.aPredivFactorTable)
+    [Anonymous Symbol]                       0x08004bc4   Section        0  stm32f1xx_hal_rcc.o(.rodata.HAL_RCC_GetSysClockFreq.aPredivFactorTable)
+    HAL_RCC_GetSysClockFreq.aPLLMULFactorTable 0x08004bc6   Data          16  stm32f1xx_hal_rcc.o(.rodata.cst16)
+    [Anonymous Symbol]                       0x08004bc6   Section        0  stm32f1xx_hal_rcc.o(.rodata.cst16)
     .L_MergedGlobals                         0x20000000   Data          12  main.o(.data..L_MergedGlobals)
     [Anonymous Symbol]                       0x20000000   Section        0  main.o(.data..L_MergedGlobals)
     .L_MergedGlobals                         0x2000000c   Data           8  stm32f1xx_hal.o(.data..L_MergedGlobals)
@@ -2122,18 +2123,18 @@ Image Symbol Table
     [Anonymous Symbol]                       0x2000001c   Section        0  main.o(.data.last_switch_count)
     .L_MergedGlobals                         0x20000020   Data          60  adc.o(.bss..L_MergedGlobals)
     [Anonymous Symbol]                       0x20000020   Section        0  adc.o(.bss..L_MergedGlobals)
-    .L_MergedGlobals.1                       0x20000060   Data         104  main.o(.bss..L_MergedGlobals.1)
+    .L_MergedGlobals.1                       0x20000060   Data         112  main.o(.bss..L_MergedGlobals.1)
     [Anonymous Symbol]                       0x20000060   Section        0  main.o(.bss..L_MergedGlobals.1)
-    last_error                               0x20000080   Data           4  main.o(.bss..L_MergedGlobals.1)
-    last_derivative                          0x20000084   Data           4  main.o(.bss..L_MergedGlobals.1)
-    reed_window_index                        0x20000088   Data           4  main.o(.bss..L_MergedGlobals.1)
-    inductor_window_index                    0x2000008c   Data           4  main.o(.bss..L_MergedGlobals.1)
-    reed_window                              0x200000ac   Data           5  main.o(.bss..L_MergedGlobals.1)
-    inductor_left_window                     0x200000b2   Data           6  main.o(.bss..L_MergedGlobals.1)
-    inductor_right_window                    0x200000b8   Data           6  main.o(.bss..L_MergedGlobals.1)
-    PWM_BreathDuty.count_Add                 0x200000c8   Data           2  pwm.o(.bss.PWM_BreathDuty.count_Add)
-    [Anonymous Symbol]                       0x200000c8   Section        0  pwm.o(.bss.PWM_BreathDuty.count_Add)
-    STACK                                    0x20000470   Section     1024  startup_stm32f103xe.o(STACK)
+    last_error                               0x20000088   Data           4  main.o(.bss..L_MergedGlobals.1)
+    Last_Kd_Velue                            0x2000008c   Data           4  main.o(.bss..L_MergedGlobals.1)
+    reed_window_index                        0x20000090   Data           4  main.o(.bss..L_MergedGlobals.1)
+    Pins_window_index                        0x20000094   Data           4  main.o(.bss..L_MergedGlobals.1)
+    reed_window                              0x200000b4   Data           5  main.o(.bss..L_MergedGlobals.1)
+    Fliter_Left_Window                       0x200000ba   Data           6  main.o(.bss..L_MergedGlobals.1)
+    Fliter_Right_Window                      0x200000c0   Data           6  main.o(.bss..L_MergedGlobals.1)
+    PWM_BreathDuty.count_Add                 0x200000d0   Data           2  pwm.o(.bss.PWM_BreathDuty.count_Add)
+    [Anonymous Symbol]                       0x200000d0   Section        0  pwm.o(.bss.PWM_BreathDuty.count_Add)
+    STACK                                    0x20000478   Section     1024  startup_stm32f103xe.o(STACK)
 
     Global Symbols
 
@@ -2336,23 +2337,23 @@ Image Symbol Table
     RC_Init                                  0x080040ed   Thumb Code    78  rc.o(.text.RC_Init)
     RC_ReceiveCallback                       0x0800413d   Thumb Code   290  rc.o(.text.RC_ReceiveCallback)
     SVC_Handler                              0x08004261   Thumb Code     2  stm32f1xx_it.o(.text.SVC_Handler)
-    Switch                                   0x08004265   Thumb Code   520  main.o(.text.Switch)
-    Switch_GetCode                           0x0800446d   Thumb Code    88  ctrl.o(.text.Switch_GetCode)
-    SysTick_Handler                          0x080044c5   Thumb Code     2  stm32f1xx_it.o(.text.SysTick_Handler)
-    SystemInit                               0x080044c9   Thumb Code     2  system_stm32f1xx.o(.text.SystemInit)
-    TIM6_IRQHandler                          0x080044cd   Thumb Code    12  stm32f1xx_it.o(.text.TIM6_IRQHandler)
-    TIM7_IRQHandler                          0x080044d9   Thumb Code    12  stm32f1xx_it.o(.text.TIM7_IRQHandler)
-    UsageFault_Handler                       0x080044e5   Thumb Code     2  stm32f1xx_it.o(.text.UsageFault_Handler)
-    Usart_SendArr                            0x080044e9   Thumb Code     6  usart.o(.text.Usart_SendArr)
-    VOFA_JustFloat                           0x080044f1   Thumb Code    74  fun.o(.text.VOFA_JustFloat)
-    main                                     0x0800453d   Thumb Code  1584  main.o(.text.main)
-    __scatterload_copy                       0x08004b6d   Thumb Code    14  handlers.o(i.__scatterload_copy)
-    __scatterload_null                       0x08004b7b   Thumb Code     2  handlers.o(i.__scatterload_null)
-    __scatterload_zeroinit                   0x08004b7d   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    AHBPrescTable                            0x08004b8a   Data          16  system_stm32f1xx.o(.rodata.AHBPrescTable)
-    APBPrescTable                            0x08004b9a   Data           8  system_stm32f1xx.o(.rodata.APBPrescTable)
-    Region$$Table$$Base                      0x08004bb4   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08004bd4   Number         0  anon$$obj.o(Region$$Table)
+    Switch                                   0x08004265   Thumb Code   500  main.o(.text.Switch)
+    Switch_GetCode                           0x08004459   Thumb Code    88  ctrl.o(.text.Switch_GetCode)
+    SysTick_Handler                          0x080044b1   Thumb Code     2  stm32f1xx_it.o(.text.SysTick_Handler)
+    SystemInit                               0x080044b5   Thumb Code     2  system_stm32f1xx.o(.text.SystemInit)
+    TIM6_IRQHandler                          0x080044b9   Thumb Code    12  stm32f1xx_it.o(.text.TIM6_IRQHandler)
+    TIM7_IRQHandler                          0x080044c5   Thumb Code    12  stm32f1xx_it.o(.text.TIM7_IRQHandler)
+    UsageFault_Handler                       0x080044d1   Thumb Code     2  stm32f1xx_it.o(.text.UsageFault_Handler)
+    Usart_SendArr                            0x080044d5   Thumb Code     6  usart.o(.text.Usart_SendArr)
+    VOFA_JustFloat                           0x080044dd   Thumb Code    74  fun.o(.text.VOFA_JustFloat)
+    main                                     0x08004529   Thumb Code  1638  main.o(.text.main)
+    __scatterload_copy                       0x08004b8f   Thumb Code    14  handlers.o(i.__scatterload_copy)
+    __scatterload_null                       0x08004b9d   Thumb Code     2  handlers.o(i.__scatterload_null)
+    __scatterload_zeroinit                   0x08004b9f   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
+    AHBPrescTable                            0x08004bac   Data          16  system_stm32f1xx.o(.rodata.AHBPrescTable)
+    APBPrescTable                            0x08004bbc   Data           8  system_stm32f1xx.o(.rodata.APBPrescTable)
+    Region$$Table$$Base                      0x08004bd8   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08004bf8   Number         0  anon$$obj.o(Region$$Table)
     SteerPWM                                 0x20000000   Data           2  main.o(.data..L_MergedGlobals)
     Dir_Err_Wheel_Limit_Low                  0x20000004   Data           4  main.o(.data..L_MergedGlobals)
     Dir_Err_Wheel_Limit_High                 0x20000008   Data           4  main.o(.data..L_MergedGlobals)
@@ -2368,36 +2369,38 @@ Image Symbol Table
     AD_Left                                  0x20000066   Data           2  main.o(.bss..L_MergedGlobals.1)
     AD_Right                                 0x20000068   Data           2  main.o(.bss..L_MergedGlobals.1)
     Dir_Output                               0x2000006a   Data           2  main.o(.bss..L_MergedGlobals.1)
-    Wheel_Right_Speed                        0x2000006c   Data           2  main.o(.bss..L_MergedGlobals.1)
-    Wheel_Left_Speed                         0x2000006e   Data           2  main.o(.bss..L_MergedGlobals.1)
+    Wheel_Left_Speed                         0x2000006c   Data           2  main.o(.bss..L_MergedGlobals.1)
+    Wheel_Right_Speed                        0x2000006e   Data           2  main.o(.bss..L_MergedGlobals.1)
     Std_Speed                                0x20000070   Data           2  main.o(.bss..L_MergedGlobals.1)
     Dir_Err_Wheel                            0x20000074   Data           4  main.o(.bss..L_MergedGlobals.1)
-    stop                                     0x20000078   Data           4  main.o(.bss..L_MergedGlobals.1)
-    reed_count                               0x2000007c   Data           4  main.o(.bss..L_MergedGlobals.1)
-    Dir_Err                                  0x20000090   Data           4  main.o(.bss..L_MergedGlobals.1)
-    Kp_t_                                    0x20000094   Data           4  main.o(.bss..L_MergedGlobals.1)
-    Kp                                       0x20000098   Data           4  main.o(.bss..L_MergedGlobals.1)
-    Kp_s                                     0x2000009c   Data           4  main.o(.bss..L_MergedGlobals.1)
-    Kd_s                                     0x200000a0   Data           4  main.o(.bss..L_MergedGlobals.1)
-    Kd_t_                                    0x200000a4   Data           4  main.o(.bss..L_MergedGlobals.1)
-    Kd                                       0x200000a8   Data           4  main.o(.bss..L_MergedGlobals.1)
-    fun                                      0x200000c0   Data           8  main.o(.bss..L_MergedGlobals.1)
-    hCtrl                                    0x200000ca   Data           2  ctrl.o(.bss.hCtrl)
-    hRC                                      0x200000cc   Data          68  rc.o(.bss.hRC)
-    hdma_adc1                                0x20000110   Data          68  adc.o(.bss.hdma_adc1)
-    hdma_usart1_tx                           0x20000154   Data          68  usart.o(.bss.hdma_usart1_tx)
-    htim1                                    0x20000198   Data          72  tim.o(.bss.htim1)
-    htim2                                    0x200001e0   Data          72  tim.o(.bss.htim2)
-    htim3                                    0x20000228   Data          72  tim.o(.bss.htim3)
-    htim4                                    0x20000270   Data          72  tim.o(.bss.htim4)
-    htim5                                    0x200002b8   Data          72  tim.o(.bss.htim5)
-    htim6                                    0x20000300   Data          72  tim.o(.bss.htim6)
-    htim7                                    0x20000348   Data          72  stm32f1xx_hal_timebase_tim.o(.bss.htim7)
-    htim8                                    0x20000390   Data          72  tim.o(.bss.htim8)
-    huart1                                   0x200003d8   Data          72  usart.o(.bss.huart1)
-    huart3                                   0x20000420   Data          72  usart.o(.bss.huart3)
-    uwTick                                   0x20000468   Data           4  stm32f1xx_hal.o(.bss.uwTick)
-    __initial_sp                             0x20000870   Data           0  startup_stm32f103xe.o(STACK)
+    reed_count                               0x20000078   Data           4  main.o(.bss..L_MergedGlobals.1)
+    stop_time                                0x2000007c   Data           4  main.o(.bss..L_MergedGlobals.1)
+    parking_state                            0x20000080   Data           4  main.o(.bss..L_MergedGlobals.1)
+    parking_start_time                       0x20000084   Data           4  main.o(.bss..L_MergedGlobals.1)
+    Dir_Err                                  0x20000098   Data           4  main.o(.bss..L_MergedGlobals.1)
+    Kp_t_                                    0x2000009c   Data           4  main.o(.bss..L_MergedGlobals.1)
+    Kp                                       0x200000a0   Data           4  main.o(.bss..L_MergedGlobals.1)
+    Kp_s                                     0x200000a4   Data           4  main.o(.bss..L_MergedGlobals.1)
+    Kd_s                                     0x200000a8   Data           4  main.o(.bss..L_MergedGlobals.1)
+    Kd_t_                                    0x200000ac   Data           4  main.o(.bss..L_MergedGlobals.1)
+    Kd                                       0x200000b0   Data           4  main.o(.bss..L_MergedGlobals.1)
+    fun                                      0x200000c8   Data           8  main.o(.bss..L_MergedGlobals.1)
+    hCtrl                                    0x200000d2   Data           2  ctrl.o(.bss.hCtrl)
+    hRC                                      0x200000d4   Data          68  rc.o(.bss.hRC)
+    hdma_adc1                                0x20000118   Data          68  adc.o(.bss.hdma_adc1)
+    hdma_usart1_tx                           0x2000015c   Data          68  usart.o(.bss.hdma_usart1_tx)
+    htim1                                    0x200001a0   Data          72  tim.o(.bss.htim1)
+    htim2                                    0x200001e8   Data          72  tim.o(.bss.htim2)
+    htim3                                    0x20000230   Data          72  tim.o(.bss.htim3)
+    htim4                                    0x20000278   Data          72  tim.o(.bss.htim4)
+    htim5                                    0x200002c0   Data          72  tim.o(.bss.htim5)
+    htim6                                    0x20000308   Data          72  tim.o(.bss.htim6)
+    htim7                                    0x20000350   Data          72  stm32f1xx_hal_timebase_tim.o(.bss.htim7)
+    htim8                                    0x20000398   Data          72  tim.o(.bss.htim8)
+    huart1                                   0x200003e0   Data          72  usart.o(.bss.huart1)
+    huart3                                   0x20000428   Data          72  usart.o(.bss.huart3)
+    uwTick                                   0x20000470   Data           4  stm32f1xx_hal.o(.bss.uwTick)
+    __initial_sp                             0x20000878   Data           0  startup_stm32f103xe.o(STACK)
 
 
 
@@ -2407,9 +2410,9 @@ Memory Map of the image
 
   Image Entry point : 0x08000131
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00004bf8, Max: 0x00040000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00004c18, Max: 0x00040000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00004bd4, Max: 0x00040000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00004bf8, Max: 0x00040000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -2601,62 +2604,63 @@ Memory Map of the image
     0x0800425e   0x0800425e   0x00000002   PAD
     0x08004260   0x08004260   0x00000002   Code   RO          162    .text.SVC_Handler   stm32f1xx_it.o
     0x08004262   0x08004262   0x00000002   PAD
-    0x08004264   0x08004264   0x00000208   Code   RO           17    .text.Switch        main.o
-    0x0800446c   0x0800446c   0x00000058   Code   RO         1108    .text.Switch_GetCode  ctrl.o
-    0x080044c4   0x080044c4   0x00000002   Code   RO          168    .text.SysTick_Handler  stm32f1xx_it.o
-    0x080044c6   0x080044c6   0x00000002   PAD
-    0x080044c8   0x080044c8   0x00000002   Code   RO         1093    .text.SystemInit    system_stm32f1xx.o
-    0x080044ca   0x080044ca   0x00000002   PAD
-    0x080044cc   0x080044cc   0x0000000c   Code   RO          176    .text.TIM6_IRQHandler  stm32f1xx_it.o
-    0x080044d8   0x080044d8   0x0000000c   Code   RO          178    .text.TIM7_IRQHandler  stm32f1xx_it.o
-    0x080044e4   0x080044e4   0x00000002   Code   RO          160    .text.UsageFault_Handler  stm32f1xx_it.o
-    0x080044e6   0x080044e6   0x00000002   PAD
-    0x080044e8   0x080044e8   0x00000006   Code   RO          133    .text.Usart_SendArr  usart.o
-    0x080044ee   0x080044ee   0x00000002   PAD
-    0x080044f0   0x080044f0   0x0000004a   Code   RO         1117    .text.VOFA_JustFloat  fun.o
-    0x0800453a   0x0800453a   0x00000002   PAD
-    0x0800453c   0x0800453c   0x00000630   Code   RO           11    .text.main          main.o
-    0x08004b6c   0x08004b6c   0x0000000e   Code   RO         1244    i.__scatterload_copy  mc_w.l(handlers.o)
-    0x08004b7a   0x08004b7a   0x00000002   Code   RO         1245    i.__scatterload_null  mc_w.l(handlers.o)
-    0x08004b7c   0x08004b7c   0x0000000e   Code   RO         1246    i.__scatterload_zeroinit  mc_w.l(handlers.o)
-    0x08004b8a   0x08004b8a   0x00000010   Data   RO         1098    .rodata.AHBPrescTable  system_stm32f1xx.o
-    0x08004b9a   0x08004b9a   0x00000008   Data   RO         1099    .rodata.APBPrescTable  system_stm32f1xx.o
-    0x08004ba2   0x08004ba2   0x00000002   Data   RO          410    .rodata.HAL_RCC_GetSysClockFreq.aPredivFactorTable  stm32f1xx_hal_rcc.o
-    0x08004ba4   0x08004ba4   0x00000010   Data   RO          409    .rodata.cst16       stm32f1xx_hal_rcc.o
-    0x08004bb4   0x08004bb4   0x00000020   Data   RO         1243    Region$$Table       anon$$obj.o
+    0x08004264   0x08004264   0x000001f4   Code   RO           17    .text.Switch        main.o
+    0x08004458   0x08004458   0x00000058   Code   RO         1108    .text.Switch_GetCode  ctrl.o
+    0x080044b0   0x080044b0   0x00000002   Code   RO          168    .text.SysTick_Handler  stm32f1xx_it.o
+    0x080044b2   0x080044b2   0x00000002   PAD
+    0x080044b4   0x080044b4   0x00000002   Code   RO         1093    .text.SystemInit    system_stm32f1xx.o
+    0x080044b6   0x080044b6   0x00000002   PAD
+    0x080044b8   0x080044b8   0x0000000c   Code   RO          176    .text.TIM6_IRQHandler  stm32f1xx_it.o
+    0x080044c4   0x080044c4   0x0000000c   Code   RO          178    .text.TIM7_IRQHandler  stm32f1xx_it.o
+    0x080044d0   0x080044d0   0x00000002   Code   RO          160    .text.UsageFault_Handler  stm32f1xx_it.o
+    0x080044d2   0x080044d2   0x00000002   PAD
+    0x080044d4   0x080044d4   0x00000006   Code   RO          133    .text.Usart_SendArr  usart.o
+    0x080044da   0x080044da   0x00000002   PAD
+    0x080044dc   0x080044dc   0x0000004a   Code   RO         1117    .text.VOFA_JustFloat  fun.o
+    0x08004526   0x08004526   0x00000002   PAD
+    0x08004528   0x08004528   0x00000666   Code   RO           11    .text.main          main.o
+    0x08004b8e   0x08004b8e   0x0000000e   Code   RO         1244    i.__scatterload_copy  mc_w.l(handlers.o)
+    0x08004b9c   0x08004b9c   0x00000002   Code   RO         1245    i.__scatterload_null  mc_w.l(handlers.o)
+    0x08004b9e   0x08004b9e   0x0000000e   Code   RO         1246    i.__scatterload_zeroinit  mc_w.l(handlers.o)
+    0x08004bac   0x08004bac   0x00000010   Data   RO         1098    .rodata.AHBPrescTable  system_stm32f1xx.o
+    0x08004bbc   0x08004bbc   0x00000008   Data   RO         1099    .rodata.APBPrescTable  system_stm32f1xx.o
+    0x08004bc4   0x08004bc4   0x00000002   Data   RO          410    .rodata.HAL_RCC_GetSysClockFreq.aPredivFactorTable  stm32f1xx_hal_rcc.o
+    0x08004bc6   0x08004bc6   0x00000010   Data   RO          409    .rodata.cst16       stm32f1xx_hal_rcc.o
+    0x08004bd6   0x08004bd6   0x00000002   PAD
+    0x08004bd8   0x08004bd8   0x00000020   Data   RO         1243    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08004bd8, Size: 0x00000870, Max: 0x0000c000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08004bf8, Size: 0x00000878, Max: 0x0000c000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x08004bd8   0x0000000c   Data   RW           38    .data..L_MergedGlobals  main.o
-    0x2000000c   0x08004be4   0x00000008   Data   RW          372    .data..L_MergedGlobals  stm32f1xx_hal.o
-    0x20000014   0x08004bec   0x00000004   Data   RW         1156    .data..L_MergedGlobals  pwm.o
-    0x20000018   0x08004bf0   0x00000004   Data   RW         1097    .data.SystemCoreClock  system_stm32f1xx.o
-    0x2000001c   0x08004bf4   0x00000001   Data   RW           35    .data.last_switch_count  main.o
-    0x2000001d   0x08004bf5   0x00000003   PAD
+    0x20000000   0x08004bf8   0x0000000c   Data   RW           38    .data..L_MergedGlobals  main.o
+    0x2000000c   0x08004c04   0x00000008   Data   RW          372    .data..L_MergedGlobals  stm32f1xx_hal.o
+    0x20000014   0x08004c0c   0x00000004   Data   RW         1156    .data..L_MergedGlobals  pwm.o
+    0x20000018   0x08004c10   0x00000004   Data   RW         1097    .data.SystemCoreClock  system_stm32f1xx.o
+    0x2000001c   0x08004c14   0x00000001   Data   RW           35    .data.last_switch_count  main.o
+    0x2000001d   0x08004c15   0x00000003   PAD
     0x20000020        -       0x0000003c   Zero   RW           70    .bss..L_MergedGlobals  adc.o
-    0x2000005c   0x08004bf5   0x00000004   PAD
-    0x20000060        -       0x00000068   Zero   RW           39    .bss..L_MergedGlobals.1  main.o
-    0x200000c8        -       0x00000002   Zero   RW         1155    .bss.PWM_BreathDuty.count_Add  pwm.o
-    0x200000ca        -       0x00000002   Zero   RW         1110    .bss.hCtrl          ctrl.o
-    0x200000cc        -       0x00000044   Zero   RW         1168    .bss.hRC            rc.o
-    0x20000110        -       0x00000044   Zero   RW           69    .bss.hdma_adc1      adc.o
-    0x20000154        -       0x00000044   Zero   RW          143    .bss.hdma_usart1_tx  usart.o
-    0x20000198        -       0x00000048   Zero   RW          108    .bss.htim1          tim.o
-    0x200001e0        -       0x00000048   Zero   RW          109    .bss.htim2          tim.o
-    0x20000228        -       0x00000048   Zero   RW          110    .bss.htim3          tim.o
-    0x20000270        -       0x00000048   Zero   RW          111    .bss.htim4          tim.o
-    0x200002b8        -       0x00000048   Zero   RW          112    .bss.htim5          tim.o
-    0x20000300        -       0x00000048   Zero   RW          113    .bss.htim6          tim.o
-    0x20000348        -       0x00000048   Zero   RW          202    .bss.htim7          stm32f1xx_hal_timebase_tim.o
-    0x20000390        -       0x00000048   Zero   RW          114    .bss.htim8          tim.o
-    0x200003d8        -       0x00000048   Zero   RW          141    .bss.huart1         usart.o
-    0x20000420        -       0x00000048   Zero   RW          142    .bss.huart3         usart.o
-    0x20000468        -       0x00000004   Zero   RW          371    .bss.uwTick         stm32f1xx_hal.o
-    0x2000046c   0x08004bf5   0x00000004   PAD
-    0x20000470        -       0x00000400   Zero   RW            1    STACK               startup_stm32f103xe.o
+    0x2000005c   0x08004c15   0x00000004   PAD
+    0x20000060        -       0x00000070   Zero   RW           39    .bss..L_MergedGlobals.1  main.o
+    0x200000d0        -       0x00000002   Zero   RW         1155    .bss.PWM_BreathDuty.count_Add  pwm.o
+    0x200000d2        -       0x00000002   Zero   RW         1110    .bss.hCtrl          ctrl.o
+    0x200000d4        -       0x00000044   Zero   RW         1168    .bss.hRC            rc.o
+    0x20000118        -       0x00000044   Zero   RW           69    .bss.hdma_adc1      adc.o
+    0x2000015c        -       0x00000044   Zero   RW          143    .bss.hdma_usart1_tx  usart.o
+    0x200001a0        -       0x00000048   Zero   RW          108    .bss.htim1          tim.o
+    0x200001e8        -       0x00000048   Zero   RW          109    .bss.htim2          tim.o
+    0x20000230        -       0x00000048   Zero   RW          110    .bss.htim3          tim.o
+    0x20000278        -       0x00000048   Zero   RW          111    .bss.htim4          tim.o
+    0x200002c0        -       0x00000048   Zero   RW          112    .bss.htim5          tim.o
+    0x20000308        -       0x00000048   Zero   RW          113    .bss.htim6          tim.o
+    0x20000350        -       0x00000048   Zero   RW          202    .bss.htim7          stm32f1xx_hal_timebase_tim.o
+    0x20000398        -       0x00000048   Zero   RW          114    .bss.htim8          tim.o
+    0x200003e0        -       0x00000048   Zero   RW          141    .bss.huart1         usart.o
+    0x20000428        -       0x00000048   Zero   RW          142    .bss.huart3         usart.o
+    0x20000470        -       0x00000004   Zero   RW          371    .bss.uwTick         stm32f1xx_hal.o
+    0x20000474   0x08004c15   0x00000004   PAD
+    0x20000478        -       0x00000400   Zero   RW            1    STACK               startup_stm32f103xe.o
 
 
 ==============================================================================
@@ -2671,7 +2675,7 @@ Image component sizes
         68          0          0          0          0       2530   dma.o
         74          0          0          0          0       3751   fun.o
        338          0          0          0          0       3341   gpio.o
-      2134         12          0         13        104      13697   main.o
+      2168         12          0         13        112      13859   main.o
        330          0          0          4          2       4302   pwm.o
        368          0          0          0         68       2635   rc.o
         36          8        304          0       1024        796   startup_stm32f103xe.o
@@ -2694,9 +2698,9 @@ Image component sizes
        450          0          0          0        212       6463   usart.o
 
     ----------------------------------------------------------------------
-     17476         84        378         32       2128     239066   Object Totals
+     17510         84        380         32       2136     239228   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-       130          0          0          3          8          0   (incl. Padding)
+       130          0          2          3          8          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -2755,15 +2759,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     19034        100        378         32       2128     239634   Grand Totals
-     19034        100        378         32       2128     239634   ELF Image Totals
-     19034        100        378         32          0          0   ROM Totals
+     19068        100        380         32       2136     239796   Grand Totals
+     19068        100        380         32       2136     239796   ELF Image Totals
+     19068        100        380         32          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                19412 (  18.96kB)
-    Total RW  Size (RW Data + ZI Data)              2160 (   2.11kB)
-    Total ROM Size (Code + RO Data + RW Data)      19444 (  18.99kB)
+    Total RO  Size (Code + RO Data)                19448 (  18.99kB)
+    Total RW  Size (RW Data + ZI Data)              2168 (   2.12kB)
+    Total ROM Size (Code + RO Data + RW Data)      19480 (  19.02kB)
 
 ==============================================================================
 

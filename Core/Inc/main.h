@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.h
+ * @brief          : Header for main.c file.
+ *                   This file contains the common defines of the application.
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -42,15 +42,15 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 // 干簧管滑动窗口滤波相关
-#define REED_WINDOW_SIZE 5
-static GPIO_PinState reed_window[REED_WINDOW_SIZE] = {GPIO_PIN_RESET};
+#define Stop_Fliter_SIZE 5
+static GPIO_PinState reed_window[Stop_Fliter_SIZE] = {GPIO_PIN_RESET};
 static int reed_window_index = 0;
 
 // 电感滑动窗口相关（利用现有数组）
-#define INDUCTOR_WINDOW_SIZE 3
-static int16_t inductor_left_window[INDUCTOR_WINDOW_SIZE] = {0, 0, 0};
-static int16_t inductor_right_window[INDUCTOR_WINDOW_SIZE] = {0, 0, 0};
-static int inductor_window_index = 0;
+#define ADC_Fliter_SIZE 3
+static int16_t Fliter_Left_Window[ADC_Fliter_SIZE] = {0, 0, 0};
+static int16_t Fliter_Right_Window[ADC_Fliter_SIZE] = {0, 0, 0};
+static int Pins_window_index = 0;
 
 /**
  * @brief 电感值滑动窗口滤波
@@ -60,14 +60,14 @@ static int inductor_window_index = 0;
  * @param index 窗口索引
  * @return 滤波后的电感值
  */
-int16_t InductorFilter(int16_t raw_value, int16_t *window, int window_size, int *index);
+int16_t ADC_Filter(int16_t raw_value, int16_t *window, int window_size, int *index);
 
 /**
  * @brief 干簧管状态滑动窗口滤波
  * @param current_state 当前干簧管状态
  * @return 滤波后的干簧管状态
  */
-GPIO_PinState ReedFilter(GPIO_PinState current_state);
+GPIO_PinState Stop_Filter(GPIO_PinState current_state);
 
 /**
  * @brief 改进的微分项计算，带滤波功能
@@ -75,7 +75,7 @@ GPIO_PinState ReedFilter(GPIO_PinState current_state);
  * @param dt 时间间隔
  * @return 滤波后的微分值
  */
-float CalculateFilteredDerivative(float current_error, float dt);
+float Kd_Math(float current_error, float dt);
 
 /**
  * @brief 改进的方向环PD控制算法
@@ -83,7 +83,7 @@ float CalculateFilteredDerivative(float current_error, float dt);
  * @param is_turning 是否处于转弯状态
  * @return 控制输出
  */
-float ImprovedDirectionPDControl(float error, uint8_t is_turning);
+float PD_Control(float error, uint8_t is_turning);
 
 /**
  * @brief 改进的差速PD控制
@@ -92,7 +92,8 @@ float ImprovedDirectionPDControl(float error, uint8_t is_turning);
  * @param is_turning 是否处于转弯状态
  * @return 差速输出
  */
-float ImprovedWheelPDControl(float steer_output, float error, uint8_t is_turning);
+float Wheel_PD_Control(float steer_output, float error, uint8_t is_turning);
+
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

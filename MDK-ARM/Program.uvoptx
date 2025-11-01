@@ -168,107 +168,77 @@
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>hRC,0x0A</ItemText>
+          <ItemText>ADC_RawValue,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>duty2,0x0A</ItemText>
+          <ItemText>AD_Left,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>duty0,0x0A</ItemText>
+          <ItemText>AD_Right,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Duty</ItemText>
+          <ItemText>SteerPWM,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>*Channel,0x0A</ItemText>
+          <ItemText>Dir_Err</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Dbg,0x0A</ItemText>
+          <ItemText>Dir_Output,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>duty,0x0A</ItemText>
+          <ItemText>Wheel_Left_Speed,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Dbg2,0x0A</ItemText>
+          <ItemText>Std_Speed,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ADC_RawValue,0x0A</ItemText>
+          <ItemText>Wheel_Right_Speed,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AD_Left,0x0A</ItemText>
+          <ItemText>Dir_Err_Wheel</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AD_Right,0x0A</ItemText>
+          <ItemText>Kd_s</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>SteerPWM,0x0A</ItemText>
+          <ItemText>Kd_t_</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Dir_Err</ItemText>
+          <ItemText>\\Program\../Core/Src/main.c\Kp_s</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Dir_Output,0x0A</ItemText>
+          <ItemText>\\Program\../Core/Src/main.c\Kp_t_</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Wheel_Left_Speed,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>17</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Std_Speed,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Wheel_Right_Speed,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Kp_s</ItemText>
-        </Ww>
-        <Ww>
-          <count>20</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Kp_t_</ItemText>
-        </Ww>
-        <Ww>
-          <count>21</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Kd,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>22</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Dir_Err_Wheel</ItemText>
+          <ItemText>reed_count,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
