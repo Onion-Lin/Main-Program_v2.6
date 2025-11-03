@@ -115,7 +115,6 @@ uint16_t Wheel_Right_PWM = 0;   // 驱动电机PWM输出值
 uint8_t Wheel_Right_IO = RESET; // 驱动电机IO口电平
 
 
-
 /**
  * @brief  主函数
  * @retval int
@@ -164,12 +163,12 @@ int main(void) {
 
   while (1) {
     // 1. 读取左右电感值并滤波
-    int16_t raw_ad_left = ADC_GetValue_Channel(ADC1_CH04_PA4); // A4:R72-L10
+    /*int16_t raw_ad_left = ADC_GetValue_Channel(ADC1_CH04_PA4); // A4:R72-L10
     int16_t raw_ad_right =ADC_GetValue_Channel(ADC1_CH15_PC5); // C5:R1200-L1300
     AD_Left = ADC_Filter(raw_ad_left, Fliter_Left_Window,ADC_Fliter_SIZE, &Pins_window_index);
-    AD_Right = ADC_Filter(raw_ad_right, Fliter_Right_Window,ADC_Fliter_SIZE, &Pins_window_index);
-    //AD_Left = ADC_GetValue_Channel(ADC1_CH04_PA4);   // A4:R72-L10
-    //AD_Right = ADC_GetValue_Channel(ADC1_CH15_PC5);  // C5:R1200-L1300
+    AD_Right = ADC_Filter(raw_ad_right, Fliter_Right_Window,ADC_Fliter_SIZE, &Pins_window_index);*/
+    AD_Left = ADC_GetValue_Channel(ADC1_CH04_PA4);   // A4:R72-L10
+    AD_Right = ADC_GetValue_Channel(ADC1_CH15_PC5);  // C5:R1200-L1300
     AD_Left *= fun;
     AD_Right *= fun;
 
@@ -228,7 +227,7 @@ int main(void) {
         parking_start_time = HAL_GetTick(); // 记录延时开始时间
       } 
       else if (parking_state == 2) { // 延时行驶状态
-        if ((HAL_GetTick() - parking_start_time) >= 500) { // 0.5秒
+        if ((HAL_GetTick() - parking_start_time) >= 550) { // 1秒
           parking_state = 3; // 进入停车状态
         }
       }
@@ -276,15 +275,15 @@ int main(void) {
 
     // 9. 输出控制信号
     if (is_turning == 1){
-      if ((Dir_Err > 800 * fun && Dir_Err < 1200 * fun) ||(Dir_Err < -800 * fun && Dir_Err > -1200 * fun)) { // 转弯分段
+      if ((Dir_Err > 1000 * fun && Dir_Err < 1300 * fun) ||(Dir_Err < -1000 * fun && Dir_Err > -1300 * fun)) { // 转弯分段
         Data_Limit(SteerPWM, Steer_PWM_Center - 25, Steer_PWM_Center + 25);
         PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
-      } else if (Dir_Err > 1200 * fun) {        //右转分段
-        Data_Limit(SteerPWM, Steer_PWM_Center - 60, Steer_PWM_Center + 60);
+      } else if (Dir_Err > 1300 * fun) {        //右转分段
+        Data_Limit(SteerPWM, Steer_PWM_Center - 63, Steer_PWM_Center + 63);
         PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
 				//PWM_SetDuty(PWM_TIM3_CH3_B0, 850);      // 右转打角值
-      } else if (Dir_Err < -1200 * fun) {
-        Data_Limit(SteerPWM, Steer_PWM_Center - 60, Steer_PWM_Center + 60);
+      } else if (Dir_Err < -1300 * fun) {
+        Data_Limit(SteerPWM, Steer_PWM_Center - 65, Steer_PWM_Center + 65);
         PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
 				//PWM_SetDuty(PWM_TIM3_CH3_B0, 745);      // 左转打角值
       } 
@@ -325,7 +324,8 @@ void Switch(void) {
       Kd_t_ = 0.1;
       Kd = 0.15;
       fun = 0.7;
-			stop_time=15;
+			//stop_time=17;
+      stop_time=1000;
       break;
 
     case 0b0001: // 仅开关1激活 (0001)
@@ -336,27 +336,29 @@ void Switch(void) {
       Kd_t_ = 0.15;
       Kd = 0.23;
       fun = 0.7;
-			stop_time=8;
+			//stop_time=12;
+      stop_time=1000;
       break;
 
     case 0b0010: // 仅开关2激活 (0010)
       Std_Speed = 650;
-      Kp_s = 0.05;
+      Kp_s = 0.085;
       Kp_t_ = 0.62;
       Kd_s = 0.20;
-      Kd_t_ = 0.235;
-      Kd = 0.235;
-			stop_time=7;
+      Kd_t_ = 0.22;
+      Kd = 0.2;
+			//stop_time=9;
+      stop_time=1000;
       break;
 
     case 0b0100: // 仅开关3激活 (0100)
 			Std_Speed = 800;
-      Kp_s = 0.05;
+      Kp_s = 0.06;
       Kp_t_ = 0.62;
       Kd_s = 0.22;
       Kd_t_ = 0.21;
       Kd = 0.235;
-			stop_time=5;
+			stop_time=8;
       break;
 
     case 0b1000: // 仅开关4激活 (1000)
@@ -366,7 +368,7 @@ void Switch(void) {
       Kd_s = 0.225;
       Kd_t_ = 0.21;
       Kd = 0.235;
-			stop_time=3;
+			stop_time=5;
       break;
 
     default:
@@ -434,7 +436,7 @@ float Wheel_PD_Control(float steer_output, float error,uint8_t is_turning) {
  */
 float Kd_Math(float current_error, float dt) {
 
-  float raw_derivative = (current_error - last_error) / dt;
+  float raw_derivative = (current_error - last_error) / dt;   // 原始微分值计算,
   const float filter_coeff = 0.2f; // 滤波
   Filtered_Kd_Velue =filter_coeff * raw_derivative + (1.0f - filter_coeff) * Last_Kd_Velue;
 
@@ -454,7 +456,7 @@ float Kd_Math(float current_error, float dt) {
  */
 int16_t ADC_Filter(int16_t raw_value, int16_t *window, int window_size,int *index) {
   window[*index] = raw_value; 
-  *index = (*index + 1) % window_size;
+  *index = (*index + 1) % window_size;      //取出下一个索引位置
   int32_t sum = 0;
   for (int i = 0; i < window_size; i++) {
     sum += window[i];
