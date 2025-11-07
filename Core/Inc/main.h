@@ -32,6 +32,14 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+/* 转弯分段参数 */
+#define TURN_THRESHOLD_HIGH 50    // 大转弯阈值
+#define TURN_THRESHOLD_LOW 25     // 小转弯阈值
+#define STRAIGHT_THRESHOLD 5      // 直行阈值
+
+/* 电感检测阈值 */
+#define AD_THRESHOLD 50           // 电感检测阈值
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
