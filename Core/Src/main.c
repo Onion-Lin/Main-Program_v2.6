@@ -91,7 +91,7 @@ int16_t fliter_Buf_L[3] = {0, 0, 0};    // 左电感滑动窗口
 int16_t fliter_Buf_R[3] = {0, 0, 0};    // 右电感滑动窗口
 int16_t Kd_Change;
 float Err_Tmp[3] = {0, 0, 0}; // 历史误差
-double fun;
+//double fun;
 static float last_error = 0;          // 上一次误差
 static float Last_Kd_Velue = 0;     // 上一次微分值
 static float Filtered_Kd_Velue = 0; // 滤波后的微分值
@@ -170,21 +170,21 @@ int main(void) {
     AD_Right = ADC_Filter(raw_ad_right, Fliter_Right_Window,ADC_Fliter_SIZE, &Pins_window_index);
     //AD_Left = ADC_GetValue_Channel(ADC1_CH04_PA4);   // A4:R72-L10
     //AD_Right = ADC_GetValue_Channel(ADC1_CH15_PC5);  // C5:R1200-L1300
-    AD_Left *= fun;
-    AD_Right *= fun;
+    //AD_Left *= fun;
+    //AD_Right *= fun;
 
     // 2.计算输出，PID
     Switch();
-    Dir_Err = AD_Left - AD_Right;
+    Dir_Err = (AD_Left - AD_Right)/(AD_Left + AD_Right) * 300; // 方向误差计算
 
     /*分段式P*/
     uint8_t is_turning = 0;
-    if (Dir_Err > 1200 * fun || Dir_Err < -1200 * fun) { // 转弯分段
+    if (Dir_Err > 40 || Dir_Err < -40) { // 转弯分段
       Kp = Kp_t_;
       is_turning = 1;
     } else { // 直行分段
       Kp = Kp_s;
-      is_turning = 0;
+      //is_turning = 0;
     }
     
     /*if (Dir_Err > 2000 * fun || Dir_Err < -2000 * fun) { // 转弯分段
@@ -275,23 +275,23 @@ int main(void) {
     }
 
     // 9. 输出控制信号
-    if (is_turning == 1){
-      if ((Dir_Err > 800 * fun && Dir_Err < 1200 * fun) ||(Dir_Err < -800 * fun && Dir_Err > -1200 * fun)) { // 转弯分段
+    //if (is_turning == 1){
+      if ((Dir_Err > 20  && Dir_Err < 40 ) ||(Dir_Err < -20  && Dir_Err > -40 )) { // 转弯分段
         Data_Limit(SteerPWM, Steer_PWM_Center - 25, Steer_PWM_Center + 25);
         PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
-      } else if (Dir_Err > 1200 * fun) {        //右转分段
+      } else if (Dir_Err > 40 ) {        //右转分段
         Data_Limit(SteerPWM, Steer_PWM_Center - 60, Steer_PWM_Center + 60);
         PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
 				//PWM_SetDuty(PWM_TIM3_CH3_B0, 850);      // 右转打角值
-      } else if (Dir_Err < -1200 * fun) {
+      } else if (Dir_Err < -40 ) {
         Data_Limit(SteerPWM, Steer_PWM_Center - 60, Steer_PWM_Center + 60);
         PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM);
 				//PWM_SetDuty(PWM_TIM3_CH3_B0, 745);      // 左转打角值
       } 
-    }
+    //}
     else {
-      //SteerPWM = Steer_PWM_Center;
-      Data_Limit(SteerPWM, Steer_PWM_Center - 2, Steer_PWM_Center + 2);
+      SteerPWM = Steer_PWM_Center;
+      //Data_Limit(SteerPWM, Steer_PWM_Center - 2, Steer_PWM_Center + 2);
       PWM_SetDuty(PWM_TIM3_CH3_B0, SteerPWM); // 舵机控制
     }
     PWM_SetDuty(PWM_TIM4_CH2_B7, Wheel_Left_PWM);  // 左电机PWM
@@ -324,7 +324,7 @@ void Switch(void) {
       Kd_s = 0.15;
       Kd_t_ = 0.1;
       Kd = 0.15;
-      fun = 0.7;
+      //fun = 0.7;
 			stop_time=15;
       break;
 
@@ -335,7 +335,7 @@ void Switch(void) {
       Kd_s = 0.20;
       Kd_t_ = 0.15;
       Kd = 0.23;
-      fun = 0.7;
+      //fun = 0.7;
 			stop_time=8;
       break;
 
