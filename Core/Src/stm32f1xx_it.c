@@ -59,6 +59,7 @@ extern DMA_HandleTypeDef hdma_adc1;
 extern TIM_HandleTypeDef htim6;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern TIM_HandleTypeDef htim7;
+extern UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN EV */
 
@@ -270,6 +271,14 @@ void TIM7_IRQHandler(void)
   /* USER CODE BEGIN TIM7_IRQn 1 */
 
   /* USER CODE END TIM7_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART3 global interrupt.
+  */
+void USART3_IRQHandler(void)
+{
+  HAL_UART_IRQHandler(&huart3);
 }
 
 /* USER CODE BEGIN 1 */

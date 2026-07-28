@@ -32,13 +32,9 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-/* 转弯分段参数 */
-#define TURN_THRESHOLD_HIGH 25    // 大转弯阈值
-#define TURN_THRESHOLD_LOW 10     // 小转弯阈值
-#define STRAIGHT_THRESHOLD 10      // 直行阈值
-
-/* 电感检测阈值 */
-#define AD_THRESHOLD 150           // 电感检测阈值
+/* 转弯分段参数（保留供参考） */
+#define TURN_THRESHOLD_HIGH 25
+#define TURN_THRESHOLD_LOW 10
 
 /* USER CODE END Includes */
 
@@ -49,58 +45,6 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-// 干簧管滑动窗口滤波相关
-#define Stop_Fliter_SIZE 5
-static GPIO_PinState reed_window[Stop_Fliter_SIZE] = {GPIO_PIN_RESET};
-static int reed_window_index = 0;
-
-// 电感滑动窗口相关（利用现有数组）
-#define ADC_Fliter_SIZE 3
-static int16_t Fliter_Left_Window[ADC_Fliter_SIZE] = {0, 0, 0};
-static int16_t Fliter_Right_Window[ADC_Fliter_SIZE] = {0, 0, 0};
-static int Pins_window_index = 0;
-
-/**
- * @brief 电感值滑动窗口滤波
- * @param raw_value 原始ADC值
- * @param window 滑动窗口数组
- * @param window_size 窗口大小
- * @param index 窗口索引
- * @return 滤波后的电感值
- */
-int16_t ADC_Filter(int16_t raw_value, int16_t *window, int window_size, int *index);
-
-/**
- * @brief 干簧管状态滑动窗口滤波
- * @param current_state 当前干簧管状态
- * @return 滤波后的干簧管状态
- */
-GPIO_PinState Stop_Filter(GPIO_PinState current_state);
-
-/**
- * @brief 改进的微分项计算，带滤波功能
- * @param current_error 当前误差
- * @param dt 时间间隔
- * @return 滤波后的微分值
- */
-float Kd_Math(float current_error, float dt);
-
-/**
- * @brief 改进的方向环PD控制算法
- * @param error 方向误差
- * @param is_turning 是否处于转弯状态
- * @return 控制输出
- */
-float PD_Control(float error, uint8_t is_turning);
-
-/**
- * @brief 改进的差速PD控制
- * @param steer_output 舵机输出值
- * @param error 方向误差
- * @param is_turning 是否处于转弯状态
- * @return 差速输出
- */
-float Wheel_PD_Control(float steer_output, float error, uint8_t is_turning);
 
 /* USER CODE END EC */
 
